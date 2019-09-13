@@ -397,7 +397,7 @@ namespace FT_Modules
 			PortDBViewModel normalizedXml = normalizeIDs(originalParsedXML);
 			stdOutXML(normalizedXml);
 			//DumpDataToXML(normalizedXml);
-
+			 
 			/*
 			AddManyCategoriesFromParamToDBTest(normalizedXml.Categories);
 			AddManySubCategoriesFromParamToDBTest(normalizedXml.Subcategories);
