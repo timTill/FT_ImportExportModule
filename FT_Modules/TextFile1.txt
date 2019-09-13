@@ -1,0 +1,93 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+
+namespace FT_Modules
+{
+	class Program
+	{
+		public const string XMLPath = @"C:\Users\Szabolcs\Source\Repos\FoodTracker\FoodTracker\FoodTracker\Port\Data.xml";
+		public static void LoadXML()
+		{
+			/*
+			IEnumerable<string> categories = from category in XDocument
+										 .Load(XMLPath)
+									 .Descendants("Category")
+											 select new Category()
+											 {
+												 Name= (string)category.Attribute("Name")
+											 };
+				*/
+			PortDBViewModel DB_VM = new PortDBViewModel();
+
+
+			//XDocument doc = XDocument.Parse(XMLPath);
+			XDocument doc = XDocument.Load(XMLPath);
+			IEnumerable<Category> categories = from c in doc.Descendants("Category")
+											   select new Category()
+											   {
+												   //Name = (string)c.Attribute("Name")
+												   Name = (string)c.Element("Name")
+											   };
+
+			Console.WriteLine("Kategóriák:\n");
+			foreach (var c in categories)
+			{
+				Console.WriteLine(c.Name);
+			}
+
+
+			IEnumerable<SubCategory> subCategories = from s in doc.Descendants("Subcategory")
+													 select new SubCategory()
+													 {
+														 //Name = (string)c.Attribute("Name")
+														 Name = (string)s.Element("Name"),
+														 CategoryId = (int)s.Element("CategoryID")
+													 };
+
+			Console.WriteLine("\nAlkategóriák:");
+			foreach (var s in subCategories)
+			{
+				Console.WriteLine(s.Name + " " + s.CategoryId);
+			}
+			DateTime date;
+			IEnumerable<Food> Foods = from f in doc.Descendants("FoodItem")
+									  select new Food()
+									  {
+										  Name = (string)f.Element("Name"),
+										  Description = (string)f.Element("Description"),
+										  CategoryId = (int)f.Element("CategoryID"),
+										  SubCategoryId = (int)f.Element("SubcategoryId"),
+										  //BestBefore = f.Element("BestBefore")==null ? (DateTime?)null : (DateTime)f.Element("BestBefore")
+										  BestBefore = string.IsNullOrEmpty((string)f.Element("BestBefore"))? (DateTime?) null :(DateTime)f.Element("BestBefore"),
+										  Unit = (int)f.Element("Unit"),
+										  //Measurement = (MeasType)Enum.Parse(typeof(MeasType), f.Element("Measurement").ToString())
+										  //Measurement= Enum.Parse<MeasType>(f.Element("Measurement").ToString())
+										  QuantityLeft = Enum.Parse<QuantityLeft>((string)f.Element("QuanityLeft")),
+										  Measurement= Enum.Parse<MeasType>((string)f.Element("Measurement"))
+									  };
+
+		Console.WriteLine("\nÉtelek:");
+			foreach (var f in Foods)
+			{
+				Console.WriteLine(f.Name + " "
+								+ f.CategoryId + " "
+								+ f.SubCategoryId + " "
+								+ f.Description + " "
+								+ f.BestBefore + " "
+								+ f.Unit + " "
+								+ f.QuantityLeft+ " "
+								+ f.Measurement);
+			}
+
+}
+
+static void Main(string[] args)
+{
+	Console.WriteLine("Hello World!");
+	LoadXML();
+	Console.ReadKey();
+}
+	}
+}
